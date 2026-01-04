@@ -14,6 +14,7 @@ from .agents.remediation_agent import RemediationAgent
 from .agents.test_export_agent import TestExportAgent
 from .utils.hashing import compute_dataset_fingerprint
 from .utils.governance import generate_governance_report
+from .utils.json_utils import sanitize_for_json
 from . import storage
 from .models import Run, RunStatus, DimensionScore, CheckResult, AgentLog, Artifact, ArtifactType
 import json
@@ -81,7 +82,7 @@ class Orchestrator:
             profiler_result = self.profiler.profile(df)
             profile = profiler_result["profile"]
             self._log_agent_step(run_id, 1, self.profiler.name, {}, profiler_result)
-            self._save_artifact(run_id, ArtifactType.PROFILE, json.dumps(profile, indent=2))
+            self._save_artifact(run_id, ArtifactType.PROFILE, json.dumps(sanitize_for_json(profile), indent=2))
             
             # Step 2: Dimension Selector Agent
             dimension_result = self.dimension_selector.select_dimensions(profile, has_references)
@@ -89,7 +90,7 @@ class Orchestrator:
             self._log_agent_step(run_id, 2, self.dimension_selector.name, 
                                {"profile_summary": {"row_count": profile["row_count"]}}, 
                                dimension_result)
-            self._save_artifact(run_id, ArtifactType.DIMENSIONS, json.dumps(dimension_result, indent=2))
+            self._save_artifact(run_id, ArtifactType.DIMENSIONS, json.dumps(sanitize_for_json(dimension_result), indent=2))
             
             # Step 3: Check Executor Agent
             check_result = self.check_executor.execute_checks(
@@ -99,7 +100,7 @@ class Orchestrator:
             self._log_agent_step(run_id, 3, self.check_executor.name,
                                {"dimensions": selected_dimensions},
                                {"total_checks": check_result["total_checks"]})
-            self._save_artifact(run_id, ArtifactType.CHECKS, json.dumps(check_results, indent=2))
+            self._save_artifact(run_id, ArtifactType.CHECKS, json.dumps(sanitize_for_json(check_results), indent=2))
             
             # Save check results to database
             self._save_check_results(run_id, check_results)
@@ -109,7 +110,7 @@ class Orchestrator:
             self._log_agent_step(run_id, 4, self.scorer.name,
                                {"total_checks": len(check_results)},
                                {"composite_dqs": scoring_result["composite_dqs"]})
-            self._save_artifact(run_id, ArtifactType.SCORES, json.dumps(scoring_result, indent=2))
+            self._save_artifact(run_id, ArtifactType.SCORES, json.dumps(sanitize_for_json(scoring_result), indent=2))
             
             # Save dimension scores to database
             self._save_dimension_scores(run_id, scoring_result)
@@ -128,7 +129,7 @@ class Orchestrator:
             self._log_agent_step(run_id, 6, self.remediator.name,
                                {"total_issues": len(check_results)},
                                {"top_issues_count": len(remediation_result["top_issues"])})
-            self._save_artifact(run_id, ArtifactType.REMEDIATION, json.dumps(remediation_result, indent=2))
+            self._save_artifact(run_id, ArtifactType.REMEDIATION, json.dumps(sanitize_for_json(remediation_result), indent=2))
             
             # Step 7: Test Export Agent
             test_export_result = self.test_exporter.export_tests(check_results, profile)
@@ -204,9 +205,9 @@ class Orchestrator:
                 run_id=run_id,
                 check_id=check["check_id"],
                 dimension=check["dimension"],
-                passed=check["passed"],
+                passed=bool(check["passed"]),
                 severity=check["severity"],
-                metrics=check.get("metrics", {})
+                metrics=sanitize_for_json(check.get("metrics", {}))
             )
             results.append(result)
         storage.create_check_results(results)
@@ -218,9 +219,9 @@ class Orchestrator:
             score = DimensionScore(
                 run_id=run_id,
                 dimension=dimension,
-                score=score_data["score"],
-                weight=score_data["weight"],
-                explainability=score_data["explainability"]
+                score=float(score_data["score"]),
+                weight=float(score_data["weight"]),
+                explainability=sanitize_for_json(score_data["explainability"])
             )
             scores.append(score)
         storage.create_dimension_scores(scores)
