@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { apiClient, Run } from '@/lib/api';
+import { apiClient, RunSummary } from '@/lib/api';
 import Link from 'next/link';
 
 export default function RunsPage() {
-    const [runs, setRuns] = useState<Run[]>([]);
+    const [runs, setRuns] = useState<RunSummary[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
