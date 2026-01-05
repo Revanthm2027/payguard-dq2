@@ -22,6 +22,9 @@ export interface Run {
     composite_dqs: number;
 }
 
+// Alias for backward compatibility
+export type RunSummary = Run;
+
 export interface RunDetail {
     run: Run & {
         dataset_fingerprint: string;
