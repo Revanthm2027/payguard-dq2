@@ -1,24 +1,21 @@
-"""
-Remediation Agent: Generates prioritized recommendations and remediation plans.
-"""
-from typing import Dict, Any, List
-from datetime import datetime
-
-
-class RemediationAgent:
-    """Agent responsible for generating remediation recommendations."""
-    
-    def __init__(self):
-        self.name = "RemediationAgent"
-    
-    def generate_remediation(self,
-                           check_results: List[Dict[str, Any]],
-                           scoring_result: Dict[str, Any],
-                           issue_summaries: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Generate prioritized remediation plan.
-        
-        Returns:
+```python
+   14 |     def generate_remediation(self,
+   15 |                            check_results: List[Dict[str, Any]],
+   16 |                            scoring_result: Dict[str, Any],
+   17 |                            issue_summaries: List[Dict[str, Any]]) -> Dict[str, Any]:
+   18 |         """
+   19 |         Generate prioritized remediation plan.
+   20 |         
+   21 |         Returns:
+   22 |         """
+   23 |         # Fetch all required data in a single query to avoid N+1 query problem
+   24 |         required_data = self.fetch_required_data(check_results, scoring_result, issue_summaries)
+   25 |         remediation_plan = {}
+   26 |         for result in check_results:
+   27 |             # Use the fetched data to generate the remediation plan
+   28 |             remediation_plan[result['id']] = self.generate_plan(result, required_data)
+   29 |         return remediation_plan
+```
             RemediationResult with top issues, plan, and expected impact
         """
         start_time = datetime.now()
