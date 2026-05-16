@@ -1,24 +1,15 @@
-"""
-FastAPI main application.
-"""
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from .routes import ingest, runs
-from . import storage
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Startup and shutdown events."""
-    # Startup: Initialize database
-    storage.init_db()
-    yield
-    # Shutdown: cleanup if needed
-
-
-app = FastAPI(
-    title="PayGuard DQ API",
+```python
+  20 | app = FastAPI(
+  21 |     title="PayGuard DQ API",
+  22 |     middleware=[
+  23 |         CORSMiddleware(
+  24 |             allow_origins=["http://localhost:3000", "https://example.com"],  # replace with allowed origins
+  25 |             allow_credentials=True,
+  26 |             allow_methods=["*"],
+  27 |             allow_headers=["*"],
+  28 |         ),
+  29 |     ],
+```
     description="GenAI Agent for Universal, Dimension-Based Data Quality Scoring in Payments",
     version="1.0.0",
     lifespan=lifespan
