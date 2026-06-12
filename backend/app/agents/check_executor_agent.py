@@ -1,24 +1,21 @@
-"""
-Check Executor Agent: Runs all checks for selected dimensions.
-"""
-import pandas as pd
-from typing import Dict, Any, List, Optional
-from datetime import datetime
-from ..checks import completeness, uniqueness, validity, consistency, timeliness, integrity, reconciliation
-
-
 class CheckExecutorAgent:
-    """Agent responsible for executing data quality checks."""
-    
-    def __init__(self):
-        self.name = "CheckExecutorAgent"
-    
-    def execute_checks(self,
-                      df: pd.DataFrame,
-                      profile: Dict[str, Any],
-                      selected_dimensions: List[str],
-                      reference_data: Optional[Dict[str, pd.DataFrame]] = None) -> Dict[str, Any]:
-        """
+       """Agent responsible for executing data quality checks."""
+   
+       def __init__(self):
+           self.name = "CheckExecutorAgent"
+   
+       def execute_checks(self,
+                         df: pd.DataFrame,
+                         profile: Dict[str, Any],
+                         selected_dimensions: List[str],
+                         reference_data: Optional[Dict[str, pd.DataFrame]] = None) -> Dict[str, Any]:
+           # Retrieve all necessary data outside the loop to prevent N+1 query problems
+           necessary_data = self.retrieve_necessary_data(df, profile, selected_dimensions, reference_data)
+           results = {}
+           for dimension in selected_dimensions:
+               # Use the retrieved data to perform checks
+               results[dimension] = self.perform_checks(necessary_data, dimension)
+           return results
         Execute all checks for selected dimensions.
         
         Args:
