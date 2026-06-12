@@ -1,14 +1,5 @@
-"""
-Scoring Agent: Computes per-dimension and composite scores with explainability.
-"""
-from typing import Dict, Any, List
-from datetime import datetime
-
-
 class ScoringAgent:
     """Agent responsible for computing quality scores."""
-    
-    # Payments criticality model for risk-weighted scoring
     FIELD_CRITICALITY = {
         # Financial-critical fields
         "amount": 3,
@@ -16,9 +7,9 @@ class ScoringAgent:
         "txn_id": 3,
         "transaction_id": 3,
         "status": 3,
-        
         # Ops-critical fields
-        "merchant_id": 2,
+        "merchant_id": 2
+    }
         "mcc": 2,
         "country": 2,
         "merchant": 2,
