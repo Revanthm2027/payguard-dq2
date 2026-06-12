@@ -18,7 +18,17 @@ export default function Home() {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
+    const llmCall = async () => {
+        try {
+            const response = await apiClient.llmCall({
+                max_tokens: 2048,
+                // other parameters
+            });
+            // handle response
+        } catch (error) {
+            // handle error
+        }
+    };
     const handleDatasetUpload = async () => {
         if (!datasetFile) {
             setError('Please select a dataset file');
