@@ -1,12 +1,3 @@
-"""
-Explainer Agent: Generates human-readable narratives and issue summaries.
-Supports both LLM mode (OpenAI-compatible) and deterministic stub mode.
-"""
-import os
-from typing import Dict, Any, List, Optional
-from datetime import datetime
-
-
 class ExplainerAgent:
     """Agent responsible for generating explanations and narratives."""
     
