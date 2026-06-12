@@ -1,12 +1,8 @@
-"""
-FastAPI main application.
-"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from .routes import ingest, runs
 from . import storage
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,19 +12,10 @@ async def lifespan(app: FastAPI):
     yield
     # Shutdown: cleanup if needed
 
-
 app = FastAPI(
     title="PayGuard DQ API",
-    description="GenAI Agent for Universal, Dimension-Based Data Quality Scoring in Payments",
-    version="1.0.0",
-    lifespan=lifespan
+    max_tokens=2048
 )
-
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, specify exact origins
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

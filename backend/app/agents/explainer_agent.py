@@ -1,33 +1,15 @@
-"""
-Explainer Agent: Generates human-readable narratives and issue summaries.
-Supports both LLM mode (OpenAI-compatible) and deterministic stub mode.
-"""
-import os
-from typing import Dict, Any, List, Optional
-from datetime import datetime
-
-
 class ExplainerAgent:
-    """Agent responsible for generating explanations and narratives."""
-    
-    def __init__(self, use_llm: bool = None):
-        self.name = "ExplainerAgent"
-        
-        # Auto-detect LLM availability
-        if use_llm is None:
-            api_key = os.getenv("OPENAI_API_KEY", "")
-            self.use_llm = bool(api_key and api_key.strip())
-        else:
-            self.use_llm = use_llm
-        
-        if self.use_llm:
-            try:
-                from openai import OpenAI
-                self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            except Exception:
-                self.use_llm = False
-                self.client = None
-        else:
+       """Agent responsible for generating explanations and narratives."""
+       
+       def __init__(self, use_llm: bool = None):
+           self.name = "ExplainerAgent"
+           
+           # Auto-detect LLM availability
+           if use_llm is None:
+               api_key = os.getenv("OPENAI_API_KEY", "")
+               self.use_llm = bool(api_key and api_key.strip())
+           else:
+               self.use_llm = use_llm
             self.client = None
     
     def explain(self,
