@@ -1,24 +1,12 @@
-"""
-Governance utilities for generating compliance reports.
-"""
-from typing import Dict, Any, List
-from datetime import datetime
-
-
-def generate_governance_report(run_id: str,
-                               profile: Dict[str, Any],
-                               scoring_result: Dict[str, Any],
-                               agent_logs: List[Dict[str, Any]]) -> str:
-    """
-    Generate governance report confirming compliance with no-raw-data policy.
-    
-    Returns:
-        Markdown governance report
-    """
-    
+def generate_governance_report(run_id: str, profile: Dict[str, Any], scoring_result: Dict[str, Any], agent_logs: List[Dict[str, Any]]) -> str:
     report_parts = []
-    
-    # Header
+    # Retrieve all necessary data outside the loop to avoid N+1 query problems
+    all_agent_logs = AgentLog.objects.all()  # Assuming AgentLog is the model for agent_logs
+    for log in all_agent_logs:
+        # Use the retrieved data inside the loop
+        report_parts.append(generate_report_part(log))
+    return '
+'.join(report_parts)
     report_parts.append("# Data Quality Governance Report\n")
     report_parts.append(f"**Run ID**: {run_id}\n")
     report_parts.append(f"**Generated**: {datetime.utcnow().isoformat()}Z\n")
