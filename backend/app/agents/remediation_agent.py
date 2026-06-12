@@ -1,24 +1,32 @@
-"""
-Remediation Agent: Generates prioritized recommendations and remediation plans.
-"""
-from typing import Dict, Any, List
-from datetime import datetime
-
-
 class RemediationAgent:
     """Agent responsible for generating remediation recommendations."""
     
     def __init__(self):
         self.name = "RemediationAgent"
     
-    def generate_remediation(self,
-                           check_results: List[Dict[str, Any]],
-                           scoring_result: Dict[str, Any],
-                           issue_summaries: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Generate prioritized remediation plan.
+    def generate_remediation(self, check_results: List[Dict[str, Any]], scoring_result: Dict[str, Any], issue_summaries: List[Dict[str, Any]]) -> Dict[str, Any]:
+        all_issue_ids = [issue['id'] for issue in issue_summaries]
+        issues_from_db = self.get_issues_from_db(all_issue_ids)
+        issue_dict = {issue['id']: issue for issue in issues_from_db}
         
-        Returns:
+        remediation_plan = {}
+        for check_result in check_results:
+            issue_id = check_result['issue_id']
+            issue = issue_dict.get(issue_id)
+            if issue:
+                # Generate remediation plan for the issue
+                remediation_plan[issue_id] = self.generate_remediation_plan(issue, scoring_result)
+        return remediation_plan
+    
+    def get_issues_from_db(self, issue_ids: List[str]) -> List[Dict[str, Any]]:
+        # Query the database for issues with the given ids
+        # This is a placeholder, replace with actual database query
+        return [{'id': issue_id, 'details': 'Issue details'} for issue_id in issue_ids]
+    
+    def generate_remediation_plan(self, issue: Dict[str, Any], scoring_result: Dict[str, Any]) -> Dict[str, Any]:
+        # Generate remediation plan for the issue
+        # This is a placeholder, replace with actual remediation plan generation
+        return {'remediation_plan': 'Plan details'}
             RemediationResult with top issues, plan, and expected impact
         """
         start_time = datetime.now()
